@@ -66,10 +66,10 @@ endfunction
 
 
 " Define the highlight group for low opacity text
-highlight TempHello guifg=#cccccc gui=italic ctermfg=gray
+highlight TempSuggestion guifg=#cccccc gui=italic ctermfg=gray
 
 " The main function that handles the temporary insertion
-function! InsertTemporaryHello()
+function! InsertTemporarySuggestion()
     let ollamaResponse = FetchOllamaResponse()
     if empty(ollamaResponse)
         return
@@ -119,24 +119,24 @@ function! InsertTemporaryHello()
     " Highlight all affected lines
     for i in range(s:hl_lines)
         if i == 0  " First line
-            call matchaddpos('TempHello', [[s:original_line + i, s:hl_start, s:hl_end]])
+            call matchaddpos('TempSuggestion', [[s:original_line + i, s:hl_start, s:hl_end]])
         elseif i == s:hl_lines - 1  " Last line
-            call matchaddpos('TempHello', [[s:original_line + i, 1, len(modified_lines[i])]])
+            call matchaddpos('TempSuggestion', [[s:original_line + i, 1, len(modified_lines[i])]])
         else  " Middle lines
-            call matchaddpos('TempHello', [[s:original_line + i]])
+            call matchaddpos('TempSuggestion', [[s:original_line + i]])
         endif
     endfor
 
     " Set up key mappings to handle acceptance or rejection
-    nnoremap <buffer> <silent> <Tab> :call AcceptHello()<CR>
-    nnoremap <buffer> <silent> <Esc> :call RejectHello()<CR>
-    nnoremap <buffer> <silent> <CR> :call RejectHello()<CR>
+    nnoremap <buffer> <silent> <Tab> :call AcceptSuggestion()<CR>
+    nnoremap <buffer> <silent> <Esc> :call RejectSuggestion()<CR>
+    nnoremap <buffer> <silent> <CR> :call RejectSuggestion()<CR>
     
-    inoremap <buffer> <silent> <Tab> <Esc>:call AcceptHello()<CR>a
-    inoremap <buffer> <silent> <Esc> <Esc>:call RejectHello()<CR>a
+    inoremap <buffer> <silent> <Tab> <Esc>:call AcceptSuggestion()<CR>a
+    inoremap <buffer> <silent> <Esc> <Esc>:call RejectSuggestion()<CR>a
 endfunction
 
-function! AcceptHello()
+function! AcceptSuggestion()
     " Clean up
     call clearmatches()
     silent! iunmap <buffer> <Tab>
@@ -146,7 +146,7 @@ function! AcceptHello()
     silent! nunmap <buffer> <CR>
 endfunction
 
-function! RejectHello()
+function! RejectSuggestion()
     " Restore original text
     let current_line = line('.')
     let num_lines = len(getline(1, '$'))
@@ -172,4 +172,4 @@ function! RejectHello()
 endfunction
 
 " Map Ctrl+L in insert mode to trigger the suggestion
-inoremap <silent> <C-L> <C-O>:call InsertTemporaryHello()<CR>
+inoremap <silent> <C-L> <C-O>:call InsertTemporarySuggestion()<CR>
